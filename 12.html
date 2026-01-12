@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+<meta charset="UTF-8">
+<title>qq2</title>
+</head>
+<body>
+<h1>ToDo</h1>
+<div>
+	<label>
+		<input type="text" id="textInput" placeholder="Введите текст задачи" />
+	</label>
+	<button type="button" id="createButton">create new</button>
+</div>
+<ul>
+	<li data-done="false">
+           <label>
+		<input type="checkbox" onchange="changeStatus(this)" name="checkbox" /> 
+		Сходить в магазин
+	   </label> 
+           <button onclick="deleteItem(this)">Удалить</button>
+	</li>
+	<li data-done="false">
+           <label>
+		<input type="checkbox" onchange="changeStatus(this)" name="checkbox"/> 
+		Убраться
+	   </label>
+           <button onclick="deleteItem(this)">Удалить</button>
+	</li>
+	<li data-done="false">
+           <label>
+		<input type="checkbox" onchange="changeStatus(this)" name="checkbox"/> 
+		Заплатить за квартиру
+	   </label>
+           <button onclick="deleteItem(this)">Удалить</button>
+	</li>
+</ul>
+
+
+<script>
+//был баг когда при нажатии на кнопку создания эл-та, галочки пропадали а текст был зачеркнут. Это из-за innerHTML было, он изменяет весь хтмл потому шо. поэтому переписано на createElement
+
+let ul = document.querySelector('ul');
+
+createButton.addEventListener("click" , () => {
+    let preparedText = textInput.value.trim();
+    if (preparedText) {
+    	let newItem = document.createElement('li');
+	newItem.setAttribute('data-done', 'false');
+    	newItem.innerHTML = `<label><input type="checkbox" onchange="changeStatus(this)" name="checkbox"/> ${preparedText} </label> <button onclick="deleteItem(this)">Удалить</button>`
+    	ul.append(newItem);
+    	textInput.value = '';
+    }
+});
+
+function deleteItem(element){
+    const li = element.closest('li');
+    
+    li.remove();
+}
+
+function changeStatus(element){
+    let li = element.closest('li');
+    if (li.dataset.done === "false"){
+        li.dataset.done = "true";
+        li.querySelector('label').style.textDecoration = "line-through";
+    } else {
+        li.dataset.done = "false";
+        li.querySelector('label').style.textDecoration = "none";
+    }
+}
+</script>
+</body>
+</html>

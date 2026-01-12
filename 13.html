@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+<meta charset="UTF-8">
+<title>qq3</title>
+</head>
+<body>
+<h1>ToDo</h1>
+<div>
+	<label>
+		<input type="text" id="textInput" placeholder="Введите текст задачи" />
+	</label>
+	<button type="button" id="createButton">create new</button>
+</div>
+<ul></ul>
+<script>
+let todoList = JSON.parse(localStorage.getItem('todoList')) || [];
+let ul = document.querySelector('ul');
+renderTodoList();
+
+function saveTodoList(){
+    localStorage.setItem('todoList', JSON.stringify(todoList));
+}
+
+createButton.addEventListener("click" , () => {
+    let preparedText = textInput.value.trim();
+    if (preparedText) {
+        const newTodoItem = {
+           text: preparedText,
+           isDone: false,
+           id: crypto.randomUUID()
+        }
+        todoList.push(newTodoItem);
+        saveTodoList();
+        renderTodoItem(newTodoItem);
+    	textInput.value = '';
+    }
+});
+
+function renderTodoItem(item){
+    	let li = document.createElement('li');
+	li.setAttribute('data-done', item.isDone);
+        li.setAttribute('id', item.id);
+    	li.innerHTML = `<label style="text-decoration: ${item.isDone ? 'line-through' : 'none'}">
+                           <input type="checkbox" 
+                                  onchange="changeStatus(this)" 
+                                  name="checkbox" 
+                                  ${item.isDone ? 'checked' : ''}/> 
+                           ${item.text}
+                        </label> 
+                        <button onclick="deleteItem(this)">
+                           Удалить
+                        </button>`;
+    	ul.append(li);
+}
+
+function renderTodoList(){
+    if (todoList.length){
+        for (const item of todoList) {
+            renderTodoItem(item);
+        }
+    }
+}
+
+function deleteItem(element){
+    const li = element.closest('li');
+    const index = todoList.findIndex(item => item.id == li.id);
+    todoList.splice(index, 1);
+    saveTodoList();
+    li.remove();
+}
+
+function changeStatus(element){
+    let li = element.closest('li');
+    let todoItem = todoList.find(item => item.id == li.id);
+    if (li.dataset.done === "false"){
+        li.dataset.done = "true";
+        todoItem.isDone = true;
+        li.querySelector('label').style.textDecoration = "line-through";
+    } else {
+        li.dataset.done = "false";
+        todoItem.isDone = false;
+        li.querySelector('label').style.textDecoration = "none";
+    }
+    saveTodoList();
+}
+</script>
+</body>
+</html>

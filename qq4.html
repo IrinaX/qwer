@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+<meta charset="UTF-8">
+<title>qq4</title>
+</head>
+<body>
+<h1>ToDo</h1>
+<div>
+	<label>
+		<input type="text" id="textInput" placeholder="Введите текст задачи" />
+	</label>
+	<button type="button" id="create">create new</button>
+</div>
+<ul></ul>
+<script>
+let ul = document.querySelector('ul');
+
+let keys = Object.keys(localStorage);
+for(let key of keys) {
+  createTodoItem(JSON.parse(localStorage.getItem(key)));
+}
+
+let counter = -1;
+create.addEventListener("click" , () => {
+    let preparedText = textInput.value.trim();
+    let uuid = crypto.randomUUID();
+    let todoItem = {
+        text: preparedText,
+        isDone: false,
+	id: uuid,
+    }
+    if (preparedText) {
+        localStorage.setItem(uuid, JSON.stringify(todoItem));
+        createTodoItem(todoItem);
+    	textInput.value = '';
+    }
+});
+
+function createTodoItem(item){
+       	let li = document.createElement('li');
+	li.setAttribute('data-done', item.isDone);
+    	li.innerHTML = `<label style="text-decoration: ${item.isDone ? 'line-through' : 'none'}"><input type="checkbox" onchange="changeStatus(this, '${item.id}')" name="checkbox" ${item.isDone ? 'checked' : ''}/> ${item.text} </label> <button onclick="deleteItem(this, '${item.id}')">Удалить</button>`
+    	ul.append(li);
+}
+
+function deleteItem(element, key){
+    element.closest('li').remove();
+    localStorage.removeItem(key);
+}
+
+function changeStatus(element, key){
+    let li = element.closest('li');
+    let storedTodoItem = JSON.parse(localStorage.getItem(key));
+    if (li.dataset.done === "false"){
+        li.dataset.done = "true";
+        storedTodoItem.isDone = true;
+        li.querySelector('label').style.textDecoration = "line-through";
+    } else {
+        li.dataset.done = "false";
+        storedTodoItem.isDone = false;
+        li.querySelector('label').style.textDecoration = "none";
+    }
+    localStorage.setItem(key, JSON.stringify(storedTodoItem));
+}
+</script>
+</body>
+</html>
